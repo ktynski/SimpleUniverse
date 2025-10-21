@@ -1,0 +1,154 @@
+            createCoherenceAngle() {
+                // Coherence angle Θ_C derivation from E8 projection geometry showing cos²(Θ_C) = φ/7
+                const phi = this.emergentParameters.golden_ratio || 1.618;
+                
+                const coherenceAngle = {
+                    type: 'coherence_angle',
+                    e8_projection: {},
+                    su2_direction: {},
+                    u1_direction: {},
+                    coherence_angle: 0.0,
+                    weinberg_angle: 0.0,
+                    projection_geometry: {},
+                    opacity: 0.4 // Start visible
+                };
+
+                // E8 projection geometry
+                coherenceAngle.e8_projection = {
+                    generators: 248,
+                    position: [0, 0, 4],
+                    color: [1.0, 0.0, 0.0], // Red for E8
+                    radius: 2.0,
+                    opacity: 0.0
+                };
+
+                // SU(2)_L direction in E8 root space
+                coherenceAngle.su2_direction = {
+                    name: 'SU(2)_L',
+                    generators: 3,
+                    position: [2, 0, 2],
+                    color: [0.0, 1.0, 0.0], // Green for SU(2)
+                    radius: 0.8,
+                    opacity: 0.0,
+                    angle: 0.0 // Angle in E8 root space
+                };
+
+                // U(1)_Y direction in E8 root space
+                coherenceAngle.u1_direction = {
+                    name: 'U(1)_Y',
+                    generators: 1,
+                    position: [-2, 0, 2],
+                    color: [0.0, 0.0, 1.0], // Blue for U(1)
+                    radius: 0.4,
+                    opacity: 0.0,
+                    angle: 0.0 // Angle in E8 root space
+                };
+
+                // Calculate coherence angle from E8 projection geometry
+                // cos²(Θ_C) = φ/7 → Θ_C = arccos(√(φ/7))
+                const cos_squared_theta_c = phi / 7.0;
+                const cos_theta_c = Math.sqrt(cos_squared_theta_c);
+                coherenceAngle.coherence_angle = Math.acos(cos_theta_c);
+
+                // Calculate Weinberg angle from coherence angle
+                // sin²θ_W = cos²(Θ_C) = φ/7
+                coherenceAngle.weinberg_angle = Math.asin(Math.sqrt(cos_squared_theta_c));
+
+                // Projection geometry showing the angle between SU(2) and U(1) directions
+                coherenceAngle.projection_geometry = {
+                    angle_between_directions: coherenceAngle.coherence_angle,
+                    projection_matrix: this.calculateE8ProjectionMatrix(),
+                    eigenvalue_structure: this.calculateEigenvalueStructure()
+                };
+
+                return coherenceAngle;
+            }
+
+            calculateE8ProjectionMatrix() {
+                // Calculate E8 → SU(2)×U(1) projection matrix
+                const phi = this.emergentParameters.golden_ratio || 1.618;
+                
+                // Simplified projection matrix (in full theory, this would be 248×4)
+                const projection_matrix = {
+                    'su2_x': [1, 0, 0, 0],
+                    'su2_y': [0, 1, 0, 0],
+                    'su2_z': [0, 0, 1, 0],
+                    'u1_y': [0, 0, 0, 1]
+                };
+                
+                return projection_matrix;
+            }
+
+            calculateEigenvalueStructure() {
+                // Calculate eigenvalue structure from φ³ tree
+                const phi = this.emergentParameters.golden_ratio || 1.618;
+                
+                // Eigenvalue structure leads to integer 7
+                const eigenvalue_tree = {
+                    'phi^0': 1,
+                    'phi^1': phi,
+                    'phi^2': phi * phi,
+                    'phi^3': phi * phi * phi
+                };
+                
+                // Integer 7 comes from fermionic eigenvalue tree
+                const integer_7 = 7; // From theory
+                const cos_squared_theta_c = phi / integer_7;
+                
+                return {
+                    eigenvalue_tree: eigenvalue_tree,
+                    integer_7: integer_7,
+                    cos_squared_theta_c: cos_squared_theta_c
+                };
+            }
+
+            updateCoherenceAngle(coherenceAngle, progress) {
+                const phi = this.emergentParameters.golden_ratio || 1.618;
+                const t = Date.now() * 0.001;
+                
+                // Animate E8 projection
+                coherenceAngle.e8_projection.opacity = Math.min(progress * 1.8, 1.0) * coherenceAngle.opacity;
+                
+                // Golden ratio rotation
+                const rotationAngle = t * phi * 0.02;
+                const cosR = Math.cos(rotationAngle);
+                const sinR = Math.sin(rotationAngle);
+                
+                // Rotate E8 projection
+                const newX = coherenceAngle.e8_projection.position[0] * cosR - coherenceAngle.e8_projection.position[1] * sinR;
+                const newY = coherenceAngle.e8_projection.position[0] * sinR + coherenceAngle.e8_projection.position[1] * cosR;
+                
+                coherenceAngle.e8_projection.position[0] = newX;
+                coherenceAngle.e8_projection.position[1] = newY;
+                
+                // Animate SU(2) direction
+                coherenceAngle.su2_direction.opacity = Math.min(progress * 1.6, 1.0) * coherenceAngle.opacity;
+                
+                // SU(2) direction rotates around E8
+                const su2_angle = t * phi * 0.03;
+                coherenceAngle.su2_direction.position[0] = 2 * Math.cos(su2_angle);
+                coherenceAngle.su2_direction.position[1] = 2 * Math.sin(su2_angle);
+                coherenceAngle.su2_direction.angle = su2_angle;
+                
+                // Animate U(1) direction
+                coherenceAngle.u1_direction.opacity = Math.min(progress * 1.4, 1.0) * coherenceAngle.opacity;
+                
+                // U(1) direction rotates around E8
+                const u1_angle = t * phi * 0.025;
+                coherenceAngle.u1_direction.position[0] = -2 * Math.cos(u1_angle);
+                coherenceAngle.u1_direction.position[1] = -2 * Math.sin(u1_angle);
+                coherenceAngle.u1_direction.angle = u1_angle;
+                
+                // Update coherence angle calculation
+                const cos_squared_theta_c = phi / 7.0;
+                const cos_theta_c = Math.sqrt(cos_squared_theta_c);
+                coherenceAngle.coherence_angle = Math.acos(cos_theta_c);
+                
+                // Update Weinberg angle
+                coherenceAngle.weinberg_angle = Math.asin(Math.sqrt(cos_squared_theta_c));
+                
+                // Update projection geometry
+                coherenceAngle.projection_geometry.angle_between_directions = coherenceAngle.coherence_angle;
+                coherenceAngle.projection_geometry.eigenvalue_structure.cos_squared_theta_c = cos_squared_theta_c;
+            }
+

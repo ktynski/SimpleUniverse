@@ -1,0 +1,6 @@
+{
+  "analytical_optimal_ratio": 1.6111111111111112,
+  "theory_prediction": 1.618033988749895,
+  "confirmed": true,
+  "mode": "analytical_only"
+}

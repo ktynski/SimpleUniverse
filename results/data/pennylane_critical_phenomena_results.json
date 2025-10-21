@@ -1,0 +1,9 @@
+{
+  "timestamp": "2025-10-11T23:18:31.936339",
+  "test_results": {
+    "default.qubit_tfim": {
+      "system": "Transverse Field Ising Model",
+      "exponent": "h_c/J (critical field)",
+      "measured": 0.3,
+      "theory": 0.6180339887498948,
+      "confirmed": 

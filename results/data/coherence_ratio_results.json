@@ -1,0 +1,42 @@
+{
+  "phi": 1.618033988749895,
+  "precision": 0.02,
+  "passed": 3,
+  "total": 3,
+  "results": [
+    {
+      "system": "Quantum GHZ",
+      "n_qubits": 9,
+      "I(A:B)": 2.0827257408918523,
+      "I(B:C)": 1.2871952971154714,
+      "ratio": 1.618033988749895,
+      "expected": 1.618033988749895,
+      "error": 0.0,
+      "passed": true
+    },
+    {
+      "system": "Fibonacci Sequence",
+      "n_terms": 21,
+      "I(A:B)": 0.4900644871842159,
+      "I(B:C)": 0.3054683129221418,
+      "ratio": 1.6043054760613558,
+      "expected": 1.618033988749895,
+      "error": 0.008484687456501388,
+      "passed": true
+    },
+    {
+      "system": "Neural Hierarchy",
+      "layer_sizes": [
+        89,
+        55,
+        34
+      ],
+      "I(A:B)": 1.5730931279909588,
+      "I(B:C)": 0.9722250205673011,
+      "ratio": 1.618033988749895,
+      "expected": 1.618033988749895,
+      "error": 0.0,
+      "passed": true
+    }
+  ]
+}

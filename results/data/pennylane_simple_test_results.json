@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-10-11T19:38:54.790477",
+  "test_results": {
+    "default.qubit_optimization": {
+      "test": "Golden Ratio Overlap",
+      "measured": 1.4810821763616193,
+      "theory": 1.618033988749895,
+      "confirmed": 
