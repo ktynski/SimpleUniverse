@@ -1,0 +1,27 @@
+{
+  "timestamp": "2025-10-19T19:51:47.036875",
+  "results": [
+    {
+      "system": "2D Ising Model",
+      "exponent": "\u03b2 (magnetization)",
+      "measured": 0.13781231907821206,
+      "error": 0.062208257854809726,
+      "theory": 0.125,
+      "confirmed": true
+    },
+    {
+      "system": "2D Percolation",
+      "exponent": "df (fractal dimension)",
+      "measured": 1.8760377096692242,
+      "error": 0.01456348337952076,
+      "theory": 1.894,
+      "confirmed": true
+    }
+  ],
+  "theory_predictions": {
+    "2d_ising_nu": 0.6180339887498949,
+    "2d_ising_beta": 0.125,
+    "percolation_df": 1.894,
+    "percolation_threshold": 0.6180339887498948
+  }
+}

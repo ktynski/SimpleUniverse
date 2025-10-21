@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SCCMU - Emergent Complexity Visualization</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        
+        #canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        
+        #info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 12px;
+            min-width: 300px;
+            z-index: 10;
+        }
+        
+        #info h1 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #0ff;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 5px;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+            padding: 2px 0;
+        }
+        
+        .label {
+            color: #888;
+        }
+        
+        .value {
+            color: #0f0;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        
+        .converged { color: #0ff !important; }
+        .not-converged { color: #f80 !important; }
+        
+        .theory {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        #error {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(128, 0, 0, 0.9);
+            color: #fff;
+            padding: 20px;
+            border: 2px solid #f00;
+            border-radius: 10px;
+            display: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <div id="info">
+        <h1>SCCMU Evolution</h1>
+        
+        <div class="metric">
+            <span class="label">Nodes:</span>
+            <span class="value" id="nodes">-</span>
+        </div>
+        
+        <div class="metric">
+            <span class="label">Edges:</span>
+            <span class="value" id="edges">-</span>
+        </div>
+        
+        <div class="metric">
+            <span class="label">Free Energy ℱ:</span>
+            <span class="value" id="free-energy">-</span>
+        </div>
+        
+        <div class="metric">
+            <span class="label">Mode Prob:</span>
+            <span class="value" id="mode-prob">-</span>
+        </div>
+        
+        <div class="metric">
+            <span class="label">λ_max:</span>
+            <span class="value" id="lambda-max">-</span>
+        </div>
+        
+        <div class="metric">
+            <span class="label">Converged:</span>
+            <span class="value" id="converged">-</span>
+        </div>
+        
+        <div class="metric">
+            <span class="label">Time:</span>
+            <span class="value" id="time">-</span>s
+        </div>
+        
+        <div class="theory">
+            Theory.md: ∂ρ/∂t = ∇·(ρ∇δℱ/δρ) + ν∆ρ<br>
+            Fixed point: 𝒞ρ_∞ = λ_max ρ_∞<br>
+            φ = (1+√5)/2 ≈ 1.618
+        </div>
+    </div>
+    
+    <div id="error"></div>
+    
+    <!-- WebGL renderer removed due to fundamental architectural failures -->
+</body>
+</html>
+
