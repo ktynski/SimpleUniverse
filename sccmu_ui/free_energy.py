@@ -86,7 +86,7 @@ def compute_entropy(rho: np.ndarray) -> float:
     return float(entropy)
 
 
-def compute_free_energy(diagrams: List[ZXGraph], rho: np.ndarray) -> float:
+def compute_free_energy(diagrams: List[ZXGraph], rho: np.ndarray, beta: float = None) -> float:
     """
     Compute free energy functional ℱ[ρ].
     
@@ -98,12 +98,16 @@ def compute_free_energy(diagrams: List[ZXGraph], rho: np.ndarray) -> float:
     Args:
         diagrams: List of ZX-diagrams
         rho: Probability distribution over diagrams
+        beta: Inverse temperature (defaults to 2πφ from theory)
     
     Returns:
         Free energy ℱ[ρ]
         
     At equilibrium: ρ_∞ = argmax{ℱ[ρ]}
     """
+    if beta is None:
+        beta = BETA
+    
     # Coherence term (attractive)
     L = compute_coherence_functional(diagrams, rho)
     
@@ -111,14 +115,15 @@ def compute_free_energy(diagrams: List[ZXGraph], rho: np.ndarray) -> float:
     S = compute_entropy(rho)
     
     # Free energy
-    F = L - S / BETA
+    F = L - S / beta
     
     return float(F)
 
 
 def compute_functional_derivative(diagrams: List[ZXGraph], 
                                  rho: np.ndarray,
-                                 C_matrix: np.ndarray = None) -> np.ndarray:
+                                 C_matrix: np.ndarray = None,
+                                 beta: float = None) -> np.ndarray:
     """
     Compute functional derivative δℱ/δρ.
     
@@ -129,10 +134,14 @@ def compute_functional_derivative(diagrams: List[ZXGraph],
         diagrams: List of ZX-diagrams
         rho: Probability distribution
         C_matrix: Precomputed coherence matrix (optional, for efficiency)
+        beta: Inverse temperature (defaults to 2πφ from theory)
     
     Returns:
         Functional derivative δℱ/δρ[i] for each diagram i
     """
+    if beta is None:
+        beta = BETA
+    
     n = len(diagrams)
     
     # Apply coherence operator: (𝒞ρ)[i] = Σⱼ C([Dᵢ], [Dⱼ]) ρ([Dⱼ])
@@ -147,7 +156,7 @@ def compute_functional_derivative(diagrams: List[ZXGraph],
     
     # Functional derivative
     rho_safe = np.maximum(rho, 1e-10)
-    delta_F = -2 * C_rho + (1/BETA) * (np.log(rho_safe) + 1)
+    delta_F = -2 * C_rho + (1/beta) * (np.log(rho_safe) + 1)
     
     return delta_F
 

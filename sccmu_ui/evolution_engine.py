@@ -14,7 +14,7 @@ Test with: python3 -m pytest sccmu_ui/test_evolution.py
 """
 
 import numpy as np
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import copy
 from .zx_core import ZXGraph, NodeLabel, create_seed_graph, PHI, add_phases
 from .coherence import compute_coherence_matrix, coherence_between_diagrams
@@ -22,6 +22,12 @@ from .free_energy import (
     compute_free_energy, compute_functional_derivative,
     verify_fixed_point, BETA
 )
+
+try:
+    from .annealing import AnnealingSchedule
+except ImportError:
+    # Annealing is optional
+    AnnealingSchedule = None
 
 
 class ZXEvolutionEngine:
@@ -39,7 +45,7 @@ class ZXEvolutionEngine:
     - Verify equilibrium conditions
     """
     
-    def __init__(self, ensemble_size=20):
+    def __init__(self, ensemble_size=20, annealing_schedule=None):
         # Start with seed diagram
         self.mode_graph = create_seed_graph()
         
@@ -55,10 +61,14 @@ class ZXEvolutionEngine:
         self.free_energy_history = []
         self.coherence_history = []
         self.mode_probability_history = []
+        self.beta_history = []  # Track temperature schedule
         
         # Parameters
         self.nu = 1.0 / (2*np.pi*PHI)  # Diffusion coefficient
         self.ensemble_size = ensemble_size
+        self.annealing_schedule = annealing_schedule  # Optional temperature schedule
+        self.current_beta = BETA  # Current inverse temperature
+        self.step_count = 0  # Track evolution steps
     
     def generate_variations(self, graph: ZXGraph, max_variations: int = 20) -> List[ZXGraph]:
         """
@@ -132,6 +142,14 @@ class ZXEvolutionEngine:
         Returns:
             State dictionary with mode, F, convergence info
         """
+        # 0. Update temperature if annealing
+        if self.annealing_schedule is not None:
+            self.current_beta = self.annealing_schedule.get_beta(self.step_count)
+        else:
+            self.current_beta = BETA
+        
+        self.step_count += 1
+        
         # 1. Generate ensemble around current mode
         self.ensemble = self.generate_variations(self.mode_graph, self.ensemble_size)
         n = len(self.ensemble)
@@ -144,8 +162,10 @@ class ZXEvolutionEngine:
         # 3. Compute coherence matrix
         self.C_matrix = compute_coherence_matrix(self.ensemble)
         
-        # 4. Compute functional derivative
-        delta_F = compute_functional_derivative(self.ensemble, self.ensemble_rho, self.C_matrix)
+        # 4. Compute functional derivative (with current β)
+        delta_F = compute_functional_derivative(
+            self.ensemble, self.ensemble_rho, self.C_matrix, beta=self.current_beta
+        )
         
         # 5. Master equation evolution (simplified gradient descent)
         # ∂ρ/∂t ∝ -δℱ/δρ (gradient ascent on ℱ)
@@ -164,8 +184,8 @@ class ZXEvolutionEngine:
         self.mode_graph = self.ensemble[mode_idx].copy()
         mode_prob = self.ensemble_rho[mode_idx]
         
-        # 7. Compute observables
-        F = compute_free_energy(self.ensemble, self.ensemble_rho)
+        # 7. Compute observables (with current β)
+        F = compute_free_energy(self.ensemble, self.ensemble_rho, beta=self.current_beta)
         
         # Mode coherence (for visualization)
         mode_coherence = coherence_between_diagrams(self.mode_graph, self.mode_graph)
@@ -174,6 +194,7 @@ class ZXEvolutionEngine:
         self.free_energy_history.append(F)
         self.coherence_history.append(mode_coherence)
         self.mode_probability_history.append(mode_prob)
+        self.beta_history.append(self.current_beta)
         self.time += dt
         
         # 9. Check convergence
@@ -186,6 +207,8 @@ class ZXEvolutionEngine:
             'mode_coherence': mode_coherence,
             'num_diagrams': n,
             'time': self.time,
+            'beta': self.current_beta,
+            'temperature': 1.0 / self.current_beta if self.current_beta > 0 else float('inf'),
             'convergence': convergence
         }
     
